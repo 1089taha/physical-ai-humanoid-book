@@ -1,0 +1,309 @@
+openapi: 3.0.0
+info:
+  title: AI-Native Textbook RAG Chatbot API
+  version: 1.0.0
+  description: API for the RAG chatbot and related features of the AI-Native Physical AI & Humanoid Robotics textbook.
+servers:
+  - url: /
+    description: Local development server
+paths:
+  /chat:
+    post:
+      summary: General Chatbot Query
+      description: Handles general questions about the textbook content.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: The user's question.
+                history:
+                  type: array
+                  description: Previous conversation turns.
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                        enum: [user, assistant]
+                      content:
+                        type: string
+      responses:
+        '200':
+          description: Successful response from the chatbot.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    description: The LLM's response.
+                  sources:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Citation'
+        '400':
+          description: Invalid request.
+  /chat-selection:
+    post:
+      summary: Selected Text Chatbot Query (Strict Mode)
+      description: Answers questions strictly based on provided selected text.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+                - selected_text
+              properties:
+                query:
+                  type: string
+                  description: The user's question.
+                selected_text:
+                  type: string
+                  description: The text selected by the user.
+      responses:
+        '200':
+          description: Successful response from the chatbot (strict mode).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    description: The LLM's response.
+                  sources:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SelectedTextSource'
+        '400':
+          description: Invalid request or insufficient selected text.
+  /embed:
+    post:
+      summary: Generate Embeddings (Internal)
+      description: Generates vector embeddings for a given text content. Intended for internal content ingestion.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: The text content to embed.
+      responses:
+        '200':
+          description: Embeddings generated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  embedding:
+                    type: array
+                    items:
+                      type: number
+                      format: float
+                    description: Vector representation of the text.
+        '400':
+          description: Invalid request.
+  /auth/signup:
+    post:
+      summary: Register New User
+      description: Registers a new user with email, password, and profile information.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignUpRequest'
+      responses:
+        '200':
+          description: User registered successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user_id:
+                    type: string
+        '400':
+          description: Invalid input or user already exists.
+  /auth/signin:
+    post:
+      summary: Authenticate User
+      description: Authenticates a user and returns an authentication token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSignInRequest'
+      responses:
+        '200':
+          description: User authenticated successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  token:
+                    type: string
+        '401':
+          description: Invalid credentials.
+  /personalize:
+    post:
+      summary: Personalize Content
+      description: Adjusts chapter content based on the user's profile.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - chapter_id
+                - user_id
+              properties:
+                chapter_id:
+                  type: string
+                user_id:
+                  type: string
+      responses:
+        '200':
+          description: Personalized content returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  personalized_content:
+                    type: string
+        '400':
+          description: Invalid request or user/chapter not found.
+  /translate:
+    post:
+      summary: Translate Content
+      description: Translates a given text content to a target language (e.g., Urdu).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+                - target_language
+              properties:
+                text:
+                  type: string
+                  description: The original text to translate.
+                target_language:
+                  type: string
+                  description: The target language (e.g., "Urdu").
+      responses:
+        '200':
+          description: Translated content returned.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  translated_text:
+                    type: string
+        '400':
+          description: Invalid request or translation failed.
+components:
+  schemas:
+    Citation:
+      type: object
+      properties:
+        type:
+          type: string
+          description: Type of source (e.g., "chapter").
+        chapter:
+          type: string
+          description: The name of the chapter.
+        url:
+          type: string
+          format: uri
+          description: URL to the source.
+        offset:
+          type: integer
+          description: Text offset within the source.
+        excerpt:
+          type: string
+          description: A short excerpt from the source.
+    SelectedTextSource:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [selected_text]
+          description: Type of source (always "selected_text" for this mode).
+        chapter:
+          type: string
+          nullable: true
+          description: The name of the chapter, if available.
+        excerpt:
+          type: string
+          description: The first 150 characters of the selected text.
+    UserSignUpRequest:
+      type: object
+      required:
+        - email
+        - password
+        - programming_experience
+        - robotics_experience
+        - python_proficiency
+        - hardware_access
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+        programming_experience:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        robotics_experience:
+          type: string
+          enum: [none, some, professional]
+        python_proficiency:
+          type: string
+          enum: [beginner, intermediate, expert]
+        hardware_access:
+          type: string
+          enum: ["simulation only", Jetson, "full setup"]
+    UserSignInRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
