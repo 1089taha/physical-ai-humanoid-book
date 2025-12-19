@@ -226,7 +226,7 @@ Self-driving cars showed us AI could navigate the physical world. Drones showed 
 
 Ready? Let's start with Module 1—the nervous system that makes robots come alive.
 
-→ **[Start Module 1: The Robotic Nervous System (ROS 2)](/docs//module-1-ros2/)**
+<!-- → **[Start Module 1: The Robotic Nervous System (ROS 2)](/docs//module-1-ros2/)** -->
 
 ---
 

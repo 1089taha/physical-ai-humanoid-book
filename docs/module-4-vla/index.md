@@ -287,7 +287,7 @@ Module 4 is where everything clicks. You've built the nervous system (ROS 2), th
 
 Ready to make your robot understand human intentions?
 
-→ **[Start Chapter 12: Conversational Robotics](/docs/module-4-vla/chapter-12-conversational)**
+<!-- → **[Start Chapter 12: Conversational Robotics](/docs/module-4-vla/chapter-12-conversational)** -->
 
 ---
 
