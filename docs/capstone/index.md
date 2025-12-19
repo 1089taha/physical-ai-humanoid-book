@@ -2,7 +2,10 @@
 title: "Capstone Project"
 description: "Build an autonomous humanoid: The culmination of your Physical AI journey"
 tags: [capstone, autonomous-humanoid, final-project, portfolio]
+slug: /capstone
+sidebar_position: 99
 ---
+
 
 
 # Capstone Project: The Autonomous Humanoid
