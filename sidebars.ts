@@ -23,10 +23,10 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Module 2: The Digital Twin (Simulation)',
       items: [
-        'module-2-simulation/index',
-        'module-2-simulation/chapter-06-intro-simulation',
-        'module-2-simulation/chapter-07-gazebo',
-        'module-2-simulation/chapter-08-unity',
+        'module-2-gazebo/index',
+        'module-2-gazebo/chapter-06-intro-simulation',
+        'module-2-gazebo/chapter-07-gazebo',
+        'module-2-gazebo/chapter-08-unity',
       ],
     },
     {
@@ -53,10 +53,10 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Capstone Project',
       items: [
-        'capston/index',
-        'capston/chapter-16-capstone',
+        'capstone/index',
+        'capstone/chapter-16-capstone',
       ],
-    },
+  },
   ],
 };
 
